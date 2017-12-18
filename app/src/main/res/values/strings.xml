@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">EasyClockIn</string>
-    <string name="hello">HELLO LEO</string>
+    <string name="default_number">0</string>
+    <string name="toast">Toast</string>
+    <string name="count">Count</string>
+    <string name="random">Random</string>
 </resources>
