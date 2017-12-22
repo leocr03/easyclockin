@@ -1,9 +1,16 @@
 <resources>
-    <string name="app_name">EasyClockIn</string>
+    <string name="app_name">Easy Clock In</string>
     <string name="default_number">0</string>
     <string name="toast">Toast</string>
     <string name="count">Count</string>
     <string name="random">Random</string>
     <string name="random_heading">Here is a random number between 0 and %1d.</string>
     <string name="call">CALL WINDOW</string>
+    <string name="timer">Almoço?</string>
+    <string name="outTime">11:31</string>
+    <string name="backTime">12:31</string>
+    <string name="textOut">Saída</string>
+    <string name="textPause">Pausar</string>
+    <string name="textBack">Volta</string>
+    <string name="textToggleTimeButton">Pausar</string>
 </resources>
