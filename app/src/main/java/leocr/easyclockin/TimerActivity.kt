@@ -17,9 +17,6 @@ import leocr.easyclockin.TimerService.LocalBinder
 import android.os.IBinder
 import android.content.ServiceConnection
 
-
-
-
 class TimerActivity : AppCompatActivity() {
 
     private var mService: TimerService? = null
