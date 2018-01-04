@@ -107,11 +107,11 @@ class TimerActivity : AppCompatActivity() {
 
     private fun updateOutTimeLabel(label: String) {
         updateTextView(R.id.outTimeLabel, label)
-        val a = AnimationUtils.loadAnimation(this, R.anim.scale)
-        a.reset()
-        val tv = findViewById<TextView>(R.id.outTimeLabel)
-        tv.clearAnimation()
-        tv.startAnimation(a)
+//        val a = AnimationUtils.loadAnimation(this, R.anim.scale)
+//        a.reset()
+//        val tv = findViewById<TextView>(R.id.outTimeLabel)
+//        tv.clearAnimation()
+//        tv.startAnimation(a)
     }
 
     private fun updateTimeToBackLabel(label: String) {
