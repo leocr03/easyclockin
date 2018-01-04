@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import io.reactivex.Observable
+import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import org.joda.time.DateTime
 import org.joda.time.Hours
@@ -36,7 +37,7 @@ class TimerService : Service() {
 
         if (!isRunning()) {
             outTime = now
-            timeToBack = now.plus(Hours.hours(1)) // (Seconds.seconds(10))
+            timeToBack = now.plus(Seconds.seconds(10))
         }
 
         val timerData = isInTime(now)
@@ -57,8 +58,9 @@ class TimerService : Service() {
                                     { error -> Log.e("COUNT_TIME", "Error: " + error) },
                                     {
                                         update(timerData, "Ponto!")
+                                        Observable.just(stopSelf())
+                                                .takeUntil { !isRunning() }
                                         notifyFinish()
-                                        stopSelf()
                                     }
                             )
                 }
@@ -77,10 +79,11 @@ class TimerService : Service() {
         return subscription != null && !subscription!!.isDisposed
     }
 
-
     fun pauseTime(): Boolean {
-        return if(isRunning()) {
-            subscription!!.dispose()
+        return if (isRunning()) {
+            Observable.just(subscription!!.dispose())
+                    .takeUntil { isRunning() }
+                    .subscribe()
             true
         } else {
             false

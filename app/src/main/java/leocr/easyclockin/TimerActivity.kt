@@ -16,6 +16,8 @@ import android.content.ComponentName
 import leocr.easyclockin.TimerService.LocalBinder
 import android.os.IBinder
 import android.content.ServiceConnection
+import io.reactivex.Observable
+import android.view.animation.AnimationUtils
 
 class TimerActivity : AppCompatActivity() {
 
@@ -105,6 +107,11 @@ class TimerActivity : AppCompatActivity() {
 
     private fun updateOutTimeLabel(label: String) {
         updateTextView(R.id.outTimeLabel, label)
+        val a = AnimationUtils.loadAnimation(this, R.anim.scale)
+        a.reset()
+        val tv = findViewById<TextView>(R.id.outTimeLabel)
+        tv.clearAnimation()
+        tv.startAnimation(a)
     }
 
     private fun updateTimeToBackLabel(label: String) {
@@ -122,7 +129,11 @@ class TimerActivity : AppCompatActivity() {
 
     fun toggleTime(@Suppress("UNUSED_PARAMETER") view: View) {
         if (!mService!!.isRunning()) {
-            mService!!.countTime()
+            val now = DateTime.now().toString("HH:mm:ss")
+            updateTimerTextView(now)
+            Observable.just(mService!!.countTime())
+                    .takeUntil { mService!!.isRunning() }
+                    .subscribe()
         } else {
             mService!!.pauseTime()
             resetInterface()
