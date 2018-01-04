@@ -8,7 +8,6 @@ import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import io.reactivex.Observable
-import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import org.joda.time.DateTime
 import org.joda.time.Hours
@@ -37,7 +36,7 @@ class TimerService : Service() {
 
         if (!isRunning()) {
             outTime = now
-            timeToBack = now.plus(Seconds.seconds(10))
+            timeToBack = now.plus(Hours.hours(1))
         }
 
         val timerData = isInTime(now)
