@@ -1,23 +1,17 @@
 package leocr.easyclockin
 
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
-import org.joda.time.DateTime
-import android.content.ComponentName
-import leocr.easyclockin.TimerService.LocalBinder
-import android.os.IBinder
-import android.content.ServiceConnection
 import io.reactivex.Observable
-import android.view.animation.AnimationUtils
+import leocr.easyclockin.TimerService.LocalBinder
+import org.joda.time.DateTime
 
 class TimerActivity : AppCompatActivity() {
 
@@ -37,10 +31,10 @@ class TimerActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(timerReceiver, notifyFilter)
     }
 
-    override fun onResume() {
-        super.onResume()
-        restart()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        restart()
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -77,7 +71,7 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun restart() {
-        if (mService != null && !mService!!.isRunning()) {
+        if (mService != null && mService!!.isPaused()) {
             mService!!.countTime()
         }
     }

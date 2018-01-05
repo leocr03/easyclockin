@@ -10,7 +10,6 @@ import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.joda.time.DateTime
-import org.joda.time.Hours
 import org.joda.time.Seconds
 import java.util.concurrent.TimeUnit
 
@@ -21,6 +20,7 @@ class TimerService : Service() {
     private var outTime: DateTime? = null
     private var timeToBack: DateTime? = null
     private var subscription: Disposable? = null
+    private var isRunning = false
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -34,10 +34,12 @@ class TimerService : Service() {
     fun countTime() {
         val now = DateTime.now()
 
-        if (!isRunning()) {
+        if (isPaused()) {
             outTime = now
-            timeToBack = now.plus(Hours.hours(1))
+            timeToBack = now.plus(Seconds.seconds(10))
         }
+
+        isRunning = true
 
         val timerData = isInTime(now)
 
@@ -57,8 +59,9 @@ class TimerService : Service() {
                                     { error -> Log.e("COUNT_TIME", "Error: " + error) },
                                     {
                                         update(timerData, "Ponto!")
+                                        isRunning = true
                                         Observable.just(stopSelf())
-                                                .takeUntil { !isRunning() }
+                                                .takeUntil { isRunning() }
                                         notifyFinish()
                                     }
                             )
@@ -74,8 +77,14 @@ class TimerService : Service() {
                 date >= outTime && date < timeToBack, outTime, timeToBack)
     }
 
+    // for verification by false, please use isPaused
     fun isRunning(): Boolean {
-        return subscription != null && !subscription!!.isDisposed
+        return isRunning && subscription != null && !subscription!!.isDisposed
+    }
+
+    // for verification by false, please use isRunning
+    fun isPaused(): Boolean {
+        return !isRunning && (subscription == null || subscription!!.isDisposed)
     }
 
     fun pauseTime(): Boolean {
