@@ -13,13 +13,12 @@ import org.joda.time.DateTime
 import org.joda.time.Seconds
 import java.util.concurrent.TimeUnit
 
-
 class TimerService : Service() {
 
     private val mBinder: IBinder = LocalBinder()
+    private var subscription: Disposable? = null
     private var outTime: DateTime? = null
     private var timeToBack: DateTime? = null
-    private var subscription: Disposable? = null
     private var isRunning = false
 
     override fun onBind(intent: Intent): IBinder? {
@@ -34,7 +33,7 @@ class TimerService : Service() {
     fun countTime() {
         val now = DateTime.now()
 
-        if (isPaused()) {
+        if (isCanceled()) {
             outTime = now
             timeToBack = now.plus(Seconds.seconds(10))
         }
@@ -57,15 +56,20 @@ class TimerService : Service() {
                             .subscribe(
                                     { update(timerData, DateTime.now().toString("HH:mm:ss")) },
                                     { error -> Log.e("COUNT_TIME", "Error: " + error) },
-                                    {
-                                        update(timerData, "Ponto!")
-                                        isRunning = true
-                                        Observable.just(stopSelf())
-                                                .takeUntil { isRunning() }
-                                        notifyFinish()
-                                    }
+                                    { finish(timerData) }
                             )
                 }
+    }
+
+    private fun finish(timerData: TimerData) {
+        update(timerData, "Ponto!")
+        isRunning = true
+        Observable.just(stopSelf())
+                .takeUntil { isRunning() }
+        notifyFinish()
+        outTime = null
+        timeToBack = null
+        isRunning = false
     }
 
     data class TimerData(val isInTime: Boolean,
@@ -77,25 +81,30 @@ class TimerService : Service() {
                 date >= outTime && date < timeToBack, outTime, timeToBack)
     }
 
-    // for verification by false, please use isPaused
+    // for verification by false, please use isCanceled
     fun isRunning(): Boolean {
         return isRunning && subscription != null && !subscription!!.isDisposed
     }
 
     // for verification by false, please use isRunning
-    fun isPaused(): Boolean {
+    fun isCanceled(): Boolean {
         return !isRunning && (subscription == null || subscription!!.isDisposed)
     }
+//
+//    // for verification by false, please use isRunning
+//    fun isPaused(): Boolean {
+//        return isRunning && (subscription == null || subscription!!.isDisposed)
+//    }
 
-    fun pauseTime(): Boolean {
-        return if (isRunning()) {
-            Observable.just(subscription!!.dispose())
-                    .takeUntil { isRunning() }
-                    .subscribe()
-            true
-        } else {
-            false
-        }
+    fun pauseTiming() {
+        Observable.just(subscription!!.dispose())
+                .takeUntil { isRunning() }
+                .subscribe()
+    }
+
+    fun cancelTiming() {
+        pauseTiming()
+        isRunning = false
     }
 
     private fun notifyFinish() {

@@ -10,7 +10,9 @@
     <string name="outTime">11:31</string>
     <string name="backTime">12:31</string>
     <string name="textOut">Saída</string>
-    <string name="textPause">Pausar</string>
     <string name="textBack">Volta</string>
-    <string name="textToggleTimeButton">Pausar</string>
+    <string name="togglebutton">ToggleButton</string>
+    <string name="turnOn">Começar</string>
+    <string name="turnOff">Cancelar</string>
+    <string name="cancel">Cancelar</string>
 </resources>
