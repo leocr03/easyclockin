@@ -10,6 +10,7 @@ import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.joda.time.DateTime
+import org.joda.time.Hours
 import org.joda.time.Seconds
 import java.util.concurrent.TimeUnit
 
@@ -35,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Seconds.seconds(10))
+            timeToBack = now.plus(Hours.hours(1))
         }
 
         isRunning = true
