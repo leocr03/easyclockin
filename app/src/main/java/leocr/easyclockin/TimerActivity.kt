@@ -40,6 +40,7 @@ class TimerActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         unbindService(mConnection)
+        pause()
         mBound = false
     }
 
@@ -67,10 +68,8 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun restart() {
-        if (mService != null && mService!!.isCanceled()) {
-            mService!!.countTime()
-            updateToggleButton(false)
-        }
+        mService!!.countTime()
+        updateToggleButton(false)
     }
 
     private fun updateToggleButton(isOn: Boolean) {

@@ -98,9 +98,7 @@ class TimerService : Service() {
 //    }
 
     fun pauseTiming() {
-        Observable.just(subscription!!.dispose())
-                .takeUntil { isRunning() }
-                .subscribe()
+        subscription!!.dispose()
     }
 
     fun cancelTiming() {
