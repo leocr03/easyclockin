@@ -40,14 +40,21 @@ class TimerActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         unbindService(mConnection)
-        pause()
         mBound = false
     }
 
     private val mConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as LocalBinder
-            mService = binder.service
+
+            if (mService != null) {
+                val timerData = getTimerData(mService!!)
+                mService = binder.service
+                setTimerData(mService, timerData)
+            } else {
+                mService = binder.service
+            }
+
             mBound = true
             restart()
         }
@@ -56,6 +63,16 @@ class TimerActivity : AppCompatActivity() {
             mBound = false
             pause()
         }
+    }
+
+    private fun setTimerData(mService: TimerService?, timerData: TimerService.TimerData) {
+        mService!!.outTime = timerData.outTime
+        mService.timeToBack = timerData.timeToBack
+        mService.running = timerData.isRunning!!
+    }
+
+    private fun getTimerData(mService: TimerService): TimerService.TimerData {
+        return TimerService.TimerData(false, mService.outTime, mService.timeToBack, mService.running)
     }
 
     private val timerReceiver = object : BroadcastReceiver() {

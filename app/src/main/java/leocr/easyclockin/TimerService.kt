@@ -18,9 +18,9 @@ class TimerService : Service() {
 
     private val mBinder: IBinder = LocalBinder()
     private var subscription: Disposable? = null
-    private var outTime: DateTime? = null
-    private var timeToBack: DateTime? = null
-    private var isRunning = false
+    var outTime: DateTime? = null
+    var timeToBack: DateTime? = null
+    var running = false
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -39,7 +39,7 @@ class TimerService : Service() {
             timeToBack = now.plus(Hours.hours(1))
         }
 
-        isRunning = true
+        running = true
 
         val timerData = isInTime(now)
 
@@ -68,18 +68,18 @@ class TimerService : Service() {
 
     private fun finish(timerData: TimerData) {
         update(timerData, "Ponto!")
-        isRunning = true
         Observable.just(stopSelf())
                 .takeUntil { isRunning() }
         notifyFinish()
         outTime = null
         timeToBack = null
-        isRunning = false
+        running = false
     }
 
     data class TimerData(val isInTime: Boolean,
                          val outTime: DateTime?,
-                         val timeToBack: DateTime?)
+                         val timeToBack: DateTime?,
+                         val isRunning: Boolean? = null)
 
     private fun isInTime(date: DateTime): TimerData {
         return TimerData(outTime != null && timeToBack != null &&
@@ -88,12 +88,12 @@ class TimerService : Service() {
 
     // for verification by false, please use isCanceled
     fun isRunning(): Boolean {
-        return isRunning && subscription != null && !subscription!!.isDisposed
+        return running && subscription != null && !subscription!!.isDisposed
     }
 
     // for verification by false, please use isRunning
     fun isCanceled(): Boolean {
-        return !isRunning && (subscription == null || subscription!!.isDisposed)
+        return !running && (subscription == null || subscription!!.isDisposed)
     }
 //
 //    // for verification by false, please use isRunning
@@ -107,7 +107,7 @@ class TimerService : Service() {
 
     fun cancelTiming() {
         pauseTiming()
-        isRunning = false
+        running = false
     }
 
     private fun notifyFinish() {
