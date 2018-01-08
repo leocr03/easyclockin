@@ -49,6 +49,10 @@ class TimerService : Service() {
                 .subscribe {
                     val secondsRange: Long = Seconds.secondsBetween(DateTime.now(),
                             timeToBack).seconds.toLong() + 1
+                    if (subscription != null) {
+                        cancelTiming()
+                    }
+
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
                             .takeWhile { occurrence ->
                                 occurrence < secondsRange
