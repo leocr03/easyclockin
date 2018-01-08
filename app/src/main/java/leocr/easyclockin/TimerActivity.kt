@@ -41,6 +41,7 @@ class TimerActivity : AppCompatActivity() {
         super.onStop()
         unbindService(mConnection)
         mBound = false
+        pause()
     }
 
     private val mConnection = object : ServiceConnection {
