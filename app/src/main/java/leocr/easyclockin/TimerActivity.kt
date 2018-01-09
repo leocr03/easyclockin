@@ -29,17 +29,18 @@ class TimerActivity : AppCompatActivity() {
         // registering NOTIFY action
         val notifyFilter = IntentFilter(Constants.TIMER_NOTIFY_ACTION)
         LocalBroadcastManager.getInstance(this).registerReceiver(timerReceiver, notifyFilter)
+
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onStart() {
         super.onStart()
         val intent = Intent(this, TimerService::class.java)
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
         unbindService(mConnection)
+        super.onDestroy()
         mBound = false
         pause()
     }
