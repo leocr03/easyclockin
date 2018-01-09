@@ -36,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Hours.hours(1))
+            timeToBack = now.plus(Seconds.seconds(20))
         }
 
         running = true
@@ -55,8 +55,10 @@ class TimerService : Service() {
                     }
 
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                            .takeWhile { occurrence ->
-                                occurrence < secondsRange
+                            .takeWhile { occurrence -> occurrence < secondsRange }
+                            .doOnNext {
+                                occurrence -> timerData.progress =
+                                    (((occurrence + 1).toFloat() / secondsRange.toFloat()) * 100).toInt()
                             }
                             .timeInterval()
                             .subscribe(
@@ -80,7 +82,8 @@ class TimerService : Service() {
     data class TimerData(val isInTime: Boolean,
                          val outTime: DateTime?,
                          val timeToBack: DateTime?,
-                         val isRunning: Boolean? = null)
+                         val isRunning: Boolean? = null,
+                         var progress: Int = 0)
 
     private fun isInTime(date: DateTime): TimerData {
         return TimerData(outTime != null && timeToBack != null &&
@@ -122,6 +125,7 @@ class TimerService : Service() {
         bundle.putBoolean("isInTime", timerData.isInTime)
         bundle.putSerializable("outTime", timerData.outTime)
         bundle.putSerializable("timeToBack", timerData.timeToBack)
+        bundle.putSerializable("progress", timerData.progress)
         val localIntent = Intent(Constants.TIMER_UPDATE_ACTION).putExtras(bundle)
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
     }
