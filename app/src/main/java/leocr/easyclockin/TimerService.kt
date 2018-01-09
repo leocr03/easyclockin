@@ -51,6 +51,7 @@ class TimerService : Service() {
                             timeToBack).seconds.toLong() + 1
                     if (subscription != null) {
                         cancelTiming()
+                        running = true
                     }
 
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)

@@ -65,6 +65,7 @@ class TimerActivity : AppCompatActivity() {
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
+            cancel()
         }
     }
 
@@ -88,7 +89,7 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun restart() {
-        if (mService != null && !mService!!.isRunning()) {
+        if (mService != null) {
             mService!!.countTime()
             updateToggleButton(false)
         }
