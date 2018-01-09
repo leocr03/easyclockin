@@ -36,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Seconds.seconds(60))
+            timeToBack = now.plus(Hours.hours(1))
         }
 
         running = true

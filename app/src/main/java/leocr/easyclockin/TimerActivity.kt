@@ -41,7 +41,6 @@ class TimerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        pause()
     }
 
     override fun onDestroy() {
