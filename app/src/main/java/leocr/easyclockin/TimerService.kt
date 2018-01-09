@@ -36,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Seconds.seconds(10))
+            timeToBack = now.plus(Seconds.seconds(60))
         }
 
         running = true
@@ -71,7 +71,6 @@ class TimerService : Service() {
         Observable.just(stopSelf())
                 .takeUntil { isRunning() }
         notifyFinish()
-        println("finished")
         outTime = null
         timeToBack = null
         running = false
@@ -124,6 +123,5 @@ class TimerService : Service() {
         bundle.putSerializable("timeToBack", timerData.timeToBack)
         val localIntent = Intent(Constants.TIMER_UPDATE_ACTION).putExtras(bundle)
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
-        println("udating")
     }
 }
