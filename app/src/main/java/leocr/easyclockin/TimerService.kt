@@ -36,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Seconds.seconds(20))
+            timeToBack = now.plus(Hours.hours(1))
         }
 
         running = true
@@ -56,10 +56,7 @@ class TimerService : Service() {
 
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
                             .takeWhile { occurrence -> occurrence < secondsRange }
-                            .doOnNext {
-                                occurrence -> timerData.progress =
-                                    (((occurrence + 1).toFloat() / secondsRange.toFloat()) * 100).toInt()
-                            }
+                            .doOnNext { timerData.progress = calculateProgress(DateTime.now()) }
                             .timeInterval()
                             .subscribe(
                                     { update(timerData, DateTime.now().toString("HH:mm:ss")) },
@@ -67,6 +64,12 @@ class TimerService : Service() {
                                     { finish(timerData) }
                             )
                 }
+    }
+
+    private fun calculateProgress(now: DateTime): Int {
+        val previousSeconds = Seconds.secondsBetween(outTime, now).seconds
+        val totalRange = Seconds.secondsBetween(outTime, timeToBack).seconds
+        return ((previousSeconds.toFloat() / totalRange.toFloat()) * 100).toInt()
     }
 
     private fun finish(timerData: TimerData) {
