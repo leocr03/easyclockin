@@ -1,5 +1,6 @@
 package leocr.easyclockin
 
+import android.app.Notification.VISIBILITY_PUBLIC
 import android.app.NotificationManager
 import android.content.*
 import android.os.Bundle
@@ -194,6 +195,7 @@ class TimerActivity : AppCompatActivity() {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
+                .setVisibility(VISIBILITY_PUBLIC)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
                 as NotificationManager
