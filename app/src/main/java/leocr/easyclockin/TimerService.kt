@@ -14,13 +14,13 @@ import org.joda.time.Hours
 import org.joda.time.Seconds
 import java.util.concurrent.TimeUnit
 
-
 class TimerService : Service() {
 
     private val mBinder: IBinder = LocalBinder()
-    private var outTime: DateTime? = null
-    private var timeToBack: DateTime? = null
     private var subscription: Disposable? = null
+    var outTime: DateTime? = null
+    var timeToBack: DateTime? = null
+    var running = false
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -34,10 +34,12 @@ class TimerService : Service() {
     fun countTime() {
         val now = DateTime.now()
 
-        if (!isRunning()) {
+        if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Hours.hours(1)) // (Seconds.seconds(10))
+            timeToBack = now.plus(Hours.hours(1))
         }
+
+        running = true
 
         val timerData = isInTime(now)
 
@@ -47,6 +49,11 @@ class TimerService : Service() {
                 .subscribe {
                     val secondsRange: Long = Seconds.secondsBetween(DateTime.now(),
                             timeToBack).seconds.toLong() + 1
+                    if (subscription != null) {
+                        cancelTiming()
+                        running = true
+                    }
+
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
                             .takeWhile { occurrence ->
                                 occurrence < secondsRange
@@ -55,36 +62,53 @@ class TimerService : Service() {
                             .subscribe(
                                     { update(timerData, DateTime.now().toString("HH:mm:ss")) },
                                     { error -> Log.e("COUNT_TIME", "Error: " + error) },
-                                    {
-                                        update(timerData, "Ponto!")
-                                        notifyFinish()
-                                        stopSelf()
-                                    }
+                                    { finish(timerData) }
                             )
                 }
     }
 
+    private fun finish(timerData: TimerData) {
+        update(timerData, "Ponto!")
+        Observable.just(stopSelf())
+                .takeUntil { isRunning() }
+        notifyFinish()
+        outTime = null
+        timeToBack = null
+        running = false
+    }
+
     data class TimerData(val isInTime: Boolean,
                          val outTime: DateTime?,
-                         val timeToBack: DateTime?)
+                         val timeToBack: DateTime?,
+                         val isRunning: Boolean? = null)
 
     private fun isInTime(date: DateTime): TimerData {
         return TimerData(outTime != null && timeToBack != null &&
                 date >= outTime && date < timeToBack, outTime, timeToBack)
     }
 
+    // for verification by false, please use isCanceled
     fun isRunning(): Boolean {
-        return subscription != null && !subscription!!.isDisposed
+        return running && subscription != null && !subscription!!.isDisposed
     }
 
+    // for verification by false, please use isRunning
+    fun isCanceled(): Boolean {
+        return !running && (subscription == null || subscription!!.isDisposed)
+    }
+//
+//    // for verification by false, please use isRunning
+//    fun isPaused(): Boolean {
+//        return isRunning && (subscription == null || subscription!!.isDisposed)
+//    }
 
-    fun pauseTime(): Boolean {
-        return if(isRunning()) {
-            subscription!!.dispose()
-            true
-        } else {
-            false
-        }
+    fun pauseTiming() {
+        subscription!!.dispose()
+    }
+
+    fun cancelTiming() {
+        pauseTiming()
+        running = false
     }
 
     private fun notifyFinish() {

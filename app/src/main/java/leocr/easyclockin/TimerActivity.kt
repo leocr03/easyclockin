@@ -1,26 +1,22 @@
 package leocr.easyclockin
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
-import org.joda.time.DateTime
-import android.content.ComponentName
+import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
-import android.os.IBinder
-import android.content.ServiceConnection
+import org.joda.time.DateTime
 
 class TimerActivity : AppCompatActivity() {
 
     private var mService: TimerService? = null
-    private var mBound = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,36 +29,53 @@ class TimerActivity : AppCompatActivity() {
         // registering NOTIFY action
         val notifyFilter = IntentFilter(Constants.TIMER_NOTIFY_ACTION)
         LocalBroadcastManager.getInstance(this).registerReceiver(timerReceiver, notifyFilter)
-    }
 
-    override fun onResume() {
-        super.onResume()
-        restart()
+        intent = Intent(this, TimerService::class.java)
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onStart() {
         super.onStart()
-        val intent = Intent(this, TimerService::class.java)
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
+        restart()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onDestroy() {
         unbindService(mConnection)
-        mBound = false
+        super.onDestroy()
     }
 
     private val mConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as LocalBinder
-            mService = binder.service
-            mBound = true
+
+            if (mService != null) {
+                val timerData = getTimerData(mService!!)
+                mService = binder.service
+                setTimerData(mService, timerData)
+            } else {
+                mService = binder.service
+            }
+
             restart()
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            mBound = false
+            cancel()
         }
+    }
+
+    private fun setTimerData(mService: TimerService?, timerData: TimerService.TimerData) {
+        mService!!.outTime = timerData.outTime
+        mService.timeToBack = timerData.timeToBack
+        mService.running = timerData.isRunning!!
+    }
+
+    private fun getTimerData(mService: TimerService): TimerService.TimerData {
+        return TimerService.TimerData(false, mService.outTime, mService.timeToBack, mService.running)
     }
 
     private val timerReceiver = object : BroadcastReceiver() {
@@ -75,9 +88,15 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun restart() {
-        if (mService != null && !mService!!.isRunning()) {
+        if (mService != null) {
             mService!!.countTime()
+            updateToggleButton(false)
         }
+    }
+
+    private fun updateToggleButton(isOn: Boolean) {
+        val toggle = findViewById<ToggleButton>(R.id.toggleTimeButton)
+        toggle.isChecked = !isOn
     }
 
     private fun handleUpdateAction(intent: Intent?) {
@@ -88,23 +107,25 @@ class TimerActivity : AppCompatActivity() {
         updateTimeToBackLabel(timeToBack!!.toString("HH:mm"))
         val status: String = updateBundle.getString("status")
         updateTimerTextView(status)
-        updateToggleButton("Pausar")
+        updateToggleButton(true)
     }
 
     private fun handleNotifyAction(@Suppress("UNUSED_PARAMETER") intent: Intent?) {
         notifyClockIn()
+        updateToggleButton(false)
     }
 
     private fun updateTimerTextView(label: String) {
         updateTextView(R.id.textView_timer, label)
     }
 
-    private fun updateToggleButton(label: String) {
-        updateTextView(R.id.toggleTimeButton, label)
-    }
-
     private fun updateOutTimeLabel(label: String) {
         updateTextView(R.id.outTimeLabel, label)
+//        val a = AnimationUtils.loadAnimation(this, R.anim.scale)
+//        a.reset()
+//        val tv = findViewById<TextView>(R.id.outTimeLabel)
+//        tv.clearAnimation()
+//        tv.startAnimation(a)
     }
 
     private fun updateTimeToBackLabel(label: String) {
@@ -121,22 +142,32 @@ class TimerActivity : AppCompatActivity() {
     }
 
     fun toggleTime(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (!mService!!.isRunning()) {
+        val on = (view as ToggleButton).isChecked
+
+        if (!on) {
+            val now = DateTime.now().toString("HH:mm:ss")
+            updateTimerTextView(now)
             mService!!.countTime()
         } else {
-            mService!!.pauseTime()
-            resetInterface()
+            cancel()
         }
     }
 
     private fun notifyClockIn() {
         notify("Olha o Ponto!", "Você já pode bater o ponto! Bom Trabalho.")
-        updateToggleButton("Começar")
+    }
+
+    private fun pause() {
+        mService!!.pauseTiming()
+    }
+
+    private fun cancel() {
+        mService!!.cancelTiming()
+        resetInterface()
     }
 
     private fun resetInterface() {
         updateTimerTextView("Almoço?")
-        updateToggleButton("Começar")
     }
 
     private fun notify(title: String, message: String) {
