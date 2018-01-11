@@ -1,6 +1,6 @@
 package leocr.easyclockin
 
-import android.annotation.SuppressLint
+import android.app.Notification.VISIBILITY_PUBLIC
 import android.app.NotificationManager
 import android.content.*
 import android.os.Bundle
@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
@@ -37,10 +38,6 @@ class TimerActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         restart()
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun onDestroy() {
@@ -75,7 +72,8 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun getTimerData(mService: TimerService): TimerService.TimerData {
-        return TimerService.TimerData(false, mService.outTime, mService.timeToBack, mService.running)
+        return TimerService.TimerData(false, mService.outTime, mService.timeToBack,
+                mService.running)
     }
 
     private val timerReceiver = object : BroadcastReceiver() {
@@ -106,6 +104,8 @@ class TimerActivity : AppCompatActivity() {
         val timeToBack: DateTime? = updateBundle.getSerializable("timeToBack") as DateTime?
         updateTimeToBackLabel(timeToBack!!.toString("HH:mm"))
         val status: String = updateBundle.getString("status")
+        val progress: Int = updateBundle.getInt("progress")
+        updateTimerProgress(progress)
         updateTimerTextView(status)
         updateToggleButton(true)
     }
@@ -141,6 +141,19 @@ class TimerActivity : AppCompatActivity() {
         }).start()
     }
 
+    private fun updateTimerProgress(value: Int) {
+        updateProgressBar(R.id.progressBar, value)
+    }
+
+    private fun updateProgressBar(id: Int, value: Int) {
+        Thread(Runnable {
+            val progressBar = findViewById<ProgressBar>(id)
+            this@TimerActivity.runOnUiThread({
+                progressBar.progress = value
+            })
+        }).start()
+    }
+
     fun toggleTime(@Suppress("UNUSED_PARAMETER") view: View) {
         val on = (view as ToggleButton).isChecked
 
@@ -155,10 +168,6 @@ class TimerActivity : AppCompatActivity() {
 
     private fun notifyClockIn() {
         notify("Olha o Ponto!", "Você já pode bater o ponto! Bom Trabalho.")
-    }
-
-    private fun pause() {
-        mService!!.pauseTiming()
     }
 
     private fun cancel() {
@@ -186,6 +195,7 @@ class TimerActivity : AppCompatActivity() {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
+                .setVisibility(VISIBILITY_PUBLIC)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
                 as NotificationManager

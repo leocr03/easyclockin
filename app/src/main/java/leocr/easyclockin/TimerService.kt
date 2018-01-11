@@ -55,9 +55,8 @@ class TimerService : Service() {
                     }
 
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                            .takeWhile { occurrence ->
-                                occurrence < secondsRange
-                            }
+                            .takeWhile { occurrence -> occurrence < secondsRange }
+                            .doOnNext { timerData.progress = calculateProgress(DateTime.now()) }
                             .timeInterval()
                             .subscribe(
                                     { update(timerData, DateTime.now().toString("HH:mm:ss")) },
@@ -65,6 +64,12 @@ class TimerService : Service() {
                                     { finish(timerData) }
                             )
                 }
+    }
+
+    private fun calculateProgress(now: DateTime): Int {
+        val previousSeconds = Seconds.secondsBetween(outTime, now).seconds
+        val totalRange = Seconds.secondsBetween(outTime, timeToBack).seconds
+        return ((previousSeconds.toFloat() / totalRange.toFloat()) * 100).toInt()
     }
 
     private fun finish(timerData: TimerData) {
@@ -80,7 +85,8 @@ class TimerService : Service() {
     data class TimerData(val isInTime: Boolean,
                          val outTime: DateTime?,
                          val timeToBack: DateTime?,
-                         val isRunning: Boolean? = null)
+                         val isRunning: Boolean? = null,
+                         var progress: Int = 0)
 
     private fun isInTime(date: DateTime): TimerData {
         return TimerData(outTime != null && timeToBack != null &&
@@ -122,6 +128,7 @@ class TimerService : Service() {
         bundle.putBoolean("isInTime", timerData.isInTime)
         bundle.putSerializable("outTime", timerData.outTime)
         bundle.putSerializable("timeToBack", timerData.timeToBack)
+        bundle.putSerializable("progress", timerData.progress)
         val localIntent = Intent(Constants.TIMER_UPDATE_ACTION).putExtras(bundle)
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
     }
