@@ -36,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(Hours.hours(1))
+            timeToBack = now.plus(BuildConfig.FLAVOR.)
         }
 
         running = true
