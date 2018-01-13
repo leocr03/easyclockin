@@ -10,7 +10,6 @@ import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.joda.time.DateTime
-import org.joda.time.Hours
 import org.joda.time.Seconds
 import java.util.concurrent.TimeUnit
 
@@ -21,6 +20,7 @@ class TimerService : Service() {
     var outTime: DateTime? = null
     var timeToBack: DateTime? = null
     var running = false
+    private var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -36,7 +36,7 @@ class TimerService : Service() {
 
         if (isCanceled()) {
             outTime = now
-            timeToBack = now.plus(BuildConfig.FLAVOR.)
+            timeToBack = now.plus(Seconds.seconds(intervalTime))
         }
 
         running = true
@@ -94,12 +94,12 @@ class TimerService : Service() {
     }
 
     // for verification by false, please use isCanceled
-    fun isRunning(): Boolean {
+    private fun isRunning(): Boolean {
         return running && subscription != null && !subscription!!.isDisposed
     }
 
     // for verification by false, please use isRunning
-    fun isCanceled(): Boolean {
+    private fun isCanceled(): Boolean {
         return !running && (subscription == null || subscription!!.isDisposed)
     }
 //
@@ -108,7 +108,7 @@ class TimerService : Service() {
 //        return isRunning && (subscription == null || subscription!!.isDisposed)
 //    }
 
-    fun pauseTiming() {
+    private fun pauseTiming() {
         subscription!!.dispose()
     }
 
