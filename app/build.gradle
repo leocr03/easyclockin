@@ -7,9 +7,9 @@ apply plugin: 'kotlin-android-extensions'
 android {
     signingConfigs {
         config {
-            keyAlias 'myreleaseAlias'
+            keyAlias 'eciAlias'
             keyPassword 'android123'
-            storeFile file('/home/leonardo/my-release-key.keystore')
+            storeFile file('src/main/res/my-release-key.keystore')
             storePassword 'android123'
         }
     }
