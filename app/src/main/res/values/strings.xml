@@ -15,4 +15,6 @@
     <string name="turnOn">Começar</string>
     <string name="turnOff">Cancelar</string>
     <string name="cancel">Cancelar</string>
+    <string name="options">Opções</string>
+    <string name="settings">Configurações</string>
 </resources>

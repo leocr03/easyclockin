@@ -1,10 +1,12 @@
+package leocr.easyclockin
+
 import android.os.Bundle
-import android.support.v7.preference.PreferenceFragmentCompat
+import android.preference.PreferenceFragment
 import leocr.easyclockin.R
 
-class SettingsFragment : PreferenceFragmentCompat() {
-
-    override fun onCreatePreferences(bundle: Bundle, s: String) {
+class SettingsFragment : PreferenceFragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.app_preferences)
     }
 }
