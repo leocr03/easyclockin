@@ -236,10 +236,14 @@ class TimerActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.settings -> {
-//                settings()
+                settings()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun settings() {
+
     }
 }
