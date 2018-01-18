@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
+import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
@@ -18,6 +19,9 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
 import org.joda.time.DateTime
+import android.content.SharedPreferences
+
+
 
 
 class TimerActivity : AppCompatActivity() {
@@ -236,14 +240,23 @@ class TimerActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.settings -> {
-                settings()
+//                settings()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    private fun settings() {
-
-    }
+//
+//    private fun settings() {
+//        val prefs = PreferenceManager.getDefaultSharedPreferences(this.SettingsActivity)
+//
+////        val prefs : SharedPreferences = PreferenceManager.getDefaultSharedPreferences()
+//
+//        val intervalTimeInSeconds = prefs.getString("intervalTimeInSeconds", "3600")
+//
+//        val builder = StringBuilder()
+//        builder.append("Interval time: " + intervalTimeInSeconds + "\n")
+//
+////        textView.setText(builder.toString());
+//    }
 }

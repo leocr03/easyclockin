@@ -1,12 +1,14 @@
 package leocr.easyclockin
 
+import android.app.Activity
 import android.os.Bundle
-import android.preference.PreferenceActivity
 
-class SettingsActivity : PreferenceActivity() {
+class SettingsActivity : Activity() {
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        addPreferencesFromResource(R.xml.preferences)
+        fragmentManager.beginTransaction()
+                .replace(android.R.id.content, SettingsFragment())
+                .commit()
     }
 }
