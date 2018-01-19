@@ -18,6 +18,9 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
 import org.joda.time.DateTime
+import android.content.Intent
+
+
 
 
 class TimerActivity : AppCompatActivity() {
@@ -244,6 +247,6 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun settings() {
-
+        startActivity(Intent(this, SettingsActivity::class.java))
     }
 }
