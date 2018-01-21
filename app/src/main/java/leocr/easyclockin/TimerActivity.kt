@@ -19,15 +19,10 @@ import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
 import org.joda.time.DateTime
 import android.content.Intent
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
-
 
 class TimerActivity : AppCompatActivity() {
 
     private var mService: TimerService? = null
-
-    private var intervalTimeInSeconds: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,16 +36,8 @@ class TimerActivity : AppCompatActivity() {
         val notifyFilter = IntentFilter(Constants.TIMER_NOTIFY_ACTION)
         LocalBroadcastManager.getInstance(this).registerReceiver(timerReceiver, notifyFilter)
 
-        loadPreferences()
-
         intent = Intent(this, TimerService::class.java)
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
-    }
-
-    private fun loadPreferences() {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        intervalTimeInSeconds = preferences.getString("pref_key_timer_period_seconds", "3600")
-                .toInt()
     }
 
     override fun onStart() {
@@ -74,8 +61,6 @@ class TimerActivity : AppCompatActivity() {
             } else {
                 mService = binder.service
             }
-
-            mService!!.intervalTime = intervalTimeInSeconds!!
 
             restart()
         }
