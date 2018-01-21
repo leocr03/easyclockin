@@ -20,7 +20,7 @@ class TimerService : Service() {
     var outTime: DateTime? = null
     var timeToBack: DateTime? = null
     var running = false
-    private var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
+    var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
