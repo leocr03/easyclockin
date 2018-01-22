@@ -20,9 +20,6 @@ import leocr.easyclockin.TimerService.LocalBinder
 import org.joda.time.DateTime
 import android.content.Intent
 
-
-
-
 class TimerActivity : AppCompatActivity() {
 
     private var mService: TimerService? = null

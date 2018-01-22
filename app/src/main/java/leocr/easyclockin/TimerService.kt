@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
+import android.preference.PreferenceManager
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import io.reactivex.Observable
@@ -20,7 +21,7 @@ class TimerService : Service() {
     var outTime: DateTime? = null
     var timeToBack: DateTime? = null
     var running = false
-    private var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
+    var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -35,6 +36,7 @@ class TimerService : Service() {
         val now = DateTime.now()
 
         if (isCanceled()) {
+            loadPreferences()
             outTime = now
             timeToBack = now.plus(Seconds.seconds(intervalTime))
         }
@@ -131,5 +133,10 @@ class TimerService : Service() {
         bundle.putSerializable("progress", timerData.progress)
         val localIntent = Intent(Constants.TIMER_UPDATE_ACTION).putExtras(bundle)
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
+    }
+
+    private fun loadPreferences() {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        intervalTime = preferences.getString("pref_key_timer_period_seconds", "3600").toInt()
     }
 }

@@ -18,7 +18,7 @@
     <string name="options">Opções</string>
     <string name="settings">Configurações</string>
     <string name="pref_summary_timer_period_seconds">Permite customizar tempo de contagem.</string>
-    <string name="pref_title_timer_period_seconds">Tempo de intervalo</string>
+    <string name="pref_title_timer_period_seconds">Tempo de intervalo em segundos.</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
