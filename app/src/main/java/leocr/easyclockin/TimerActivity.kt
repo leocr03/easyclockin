@@ -97,9 +97,9 @@ class TimerActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateToggleButton(isOn: Boolean) {
+    private fun updateToggleButton(isRunning: Boolean) {
         val toggle = findViewById<ToggleButton>(R.id.toggleTimeButton)
-        toggle.isChecked = !isOn
+        toggle.isChecked = !isRunning
     }
 
     private fun handleUpdateAction(intent: Intent?) {
@@ -200,7 +200,7 @@ class TimerActivity : AppCompatActivity() {
                 .setTicker(message)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
