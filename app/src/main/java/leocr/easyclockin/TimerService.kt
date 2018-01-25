@@ -57,7 +57,10 @@ class TimerService : Service() {
                     }
 
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                            .takeWhile { occurrence -> occurrence < secondsRange }
+                            .takeWhile {
+                                occurrence -> DateTime.now() < timeToBack &&
+                                occurrence < secondsRange
+                            }
                             .doOnNext { timerData.progress = calculateProgress(DateTime.now()) }
                             .timeInterval()
                             .subscribe(
