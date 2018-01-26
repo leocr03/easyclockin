@@ -187,9 +187,9 @@ class TimerActivity : AppCompatActivity() {
     @SuppressLint("InlinedApi")
     private fun notify(title: String, message: String) {
         val context: Context = applicationContext
-        val strtitle = context.getString(R.string.app_name)
+        val strTitle = context.getString(R.string.app_name)
 
-        intent.putExtra("title", strtitle)
+        intent.putExtra("title", strTitle)
         intent.putExtra("text", message)
 
         val channelId = "001"
