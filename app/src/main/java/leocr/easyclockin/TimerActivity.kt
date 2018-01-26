@@ -10,13 +10,15 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
 import org.joda.time.DateTime
-
+import android.content.Intent
 
 class TimerActivity : AppCompatActivity() {
 
@@ -95,9 +97,9 @@ class TimerActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateToggleButton(isOn: Boolean) {
+    private fun updateToggleButton(isRunning: Boolean) {
         val toggle = findViewById<ToggleButton>(R.id.toggleTimeButton)
-        toggle.isChecked = !isOn
+        toggle.isChecked = !isRunning
     }
 
     private fun handleUpdateAction(intent: Intent?) {
@@ -185,9 +187,9 @@ class TimerActivity : AppCompatActivity() {
     @SuppressLint("InlinedApi")
     private fun notify(title: String, message: String) {
         val context: Context = applicationContext
-        val strtitle = context.getString(R.string.app_name)
+        val strTitle = context.getString(R.string.app_name)
 
-        intent.putExtra("title", strtitle)
+        intent.putExtra("title", strTitle)
         intent.putExtra("text", message)
 
         val channelId = "001"
@@ -198,7 +200,7 @@ class TimerActivity : AppCompatActivity() {
                 .setTicker(message)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
@@ -223,5 +225,25 @@ class TimerActivity : AppCompatActivity() {
     override fun finish() {
         cancel()
         super.finish()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.settings -> {
+                settings()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun settings() {
+        startActivity(Intent(this, SettingsActivity::class.java))
     }
 }
