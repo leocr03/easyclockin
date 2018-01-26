@@ -21,7 +21,7 @@ class TimerService : Service() {
     var outTime: DateTime? = null
     var timeToBack: DateTime? = null
     var running = false
-    var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
+    private var intervalTime: Int = BuildConfig.INTERVAL_TIME_IN_SECONDS.toString().toInt()
 
     override fun onBind(intent: Intent): IBinder? {
         return mBinder
@@ -50,14 +50,17 @@ class TimerService : Service() {
                 .take(1)
                 .subscribe {
                     val secondsRange: Long = Seconds.secondsBetween(DateTime.now(),
-                            timeToBack).seconds.toLong() + 1
+                            timeToBack).seconds.toLong()
                     if (subscription != null) {
                         cancelTiming()
                         running = true
                     }
 
                     subscription = Observable.interval(1000L, TimeUnit.MILLISECONDS)
-                            .takeWhile { occurrence -> occurrence < secondsRange }
+                            .takeWhile {
+                                occurrence -> DateTime.now() < timeToBack &&
+                                occurrence < secondsRange
+                            }
                             .doOnNext { timerData.progress = calculateProgress(DateTime.now()) }
                             .timeInterval()
                             .subscribe(
@@ -75,10 +78,10 @@ class TimerService : Service() {
     }
 
     private fun finish(timerData: TimerData) {
+        timerData.progress = 100
         update(timerData, "Ponto!")
-        Observable.just(stopSelf())
-                .takeUntil { isRunning() }
         notifyFinish()
+        stopSelf()
         outTime = null
         timeToBack = null
         running = false
@@ -93,11 +96,6 @@ class TimerService : Service() {
     private fun isInTime(date: DateTime): TimerData {
         return TimerData(outTime != null && timeToBack != null &&
                 date >= outTime && date < timeToBack, outTime, timeToBack)
-    }
-
-    // for verification by false, please use isCanceled
-    private fun isRunning(): Boolean {
-        return running && subscription != null && !subscription!!.isDisposed
     }
 
     // for verification by false, please use isRunning
