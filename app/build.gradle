@@ -19,7 +19,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
-        versionName "v0.1.3"
+        versionName "v0.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         flavorDimensions "default"
         buildConfigField "int", "INTERVAL_TIME_IN_SECONDS", "20"
@@ -36,7 +36,7 @@ android {
     productFlavors {
         tst {
             applicationId "leocr.easyclockin"
-            minSdkVersion 14
+            minSdkVersion 21
             targetSdkVersion 27
             versionCode 1
             versionName "v0.2.0"
@@ -47,7 +47,7 @@ android {
         }
         prod {
             applicationId "leocr.easyclockin"
-            minSdkVersion 14
+            minSdkVersion 21
             targetSdkVersion 27
             versionCode 1
             versionName "v0.2.0"
