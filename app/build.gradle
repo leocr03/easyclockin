@@ -36,7 +36,7 @@ android {
     productFlavors {
         tst {
             applicationId "leocr.easyclockin"
-            minSdkVersion 14
+            minSdkVersion 21
             targetSdkVersion 27
             versionCode 1
             versionName "v0.2.0"
@@ -47,7 +47,7 @@ android {
         }
         prod {
             applicationId "leocr.easyclockin"
-            minSdkVersion 14
+            minSdkVersion 21
             targetSdkVersion 27
             versionCode 1
             versionName "v0.2.0"
