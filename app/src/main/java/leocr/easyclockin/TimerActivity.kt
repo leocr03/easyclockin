@@ -1,6 +1,5 @@
 package leocr.easyclockin
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Notification
 import android.app.NotificationManager
@@ -18,7 +17,6 @@ import android.widget.TextView
 import android.widget.ToggleButton
 import leocr.easyclockin.TimerService.LocalBinder
 import org.joda.time.DateTime
-import android.content.Intent
 
 class TimerActivity : AppCompatActivity() {
 
@@ -184,7 +182,6 @@ class TimerActivity : AppCompatActivity() {
         updateTimerTextView("Almoço?")
     }
 
-    @SuppressLint("InlinedApi")
     private fun notify(title: String, message: String) {
         val context: Context = applicationContext
         val strTitle = context.getString(R.string.app_name)
@@ -196,7 +193,7 @@ class TimerActivity : AppCompatActivity() {
         val builder = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setPriority(2)
-                .setVibrate(longArrayOf(0, 500, 250, 500))
+                .setVibrate(longArrayOf(0, 500, 250, 500, 250, 500))
                 .setTicker(message)
                 .setContentTitle(title)
                 .setContentText(message)
