@@ -7,6 +7,7 @@ import android.content.*
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationCompat.PRIORITY_HIGH
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -192,7 +193,7 @@ class TimerActivity : AppCompatActivity() {
         val channelId = "001"
         val builder = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.ic_launcher_background)
-                .setPriority(2)
+                .setPriority(PRIORITY_HIGH)
                 .setVibrate(longArrayOf(0, 500, 250, 500, 250, 500))
                 .setTicker(message)
                 .setContentTitle(title)
