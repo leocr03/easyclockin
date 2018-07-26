@@ -1,5 +1,6 @@
 package leocr.easyclockin
 
+import android.app.AlertDialog
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
@@ -65,7 +66,13 @@ class TimerService : Service() {
                             .timeInterval()
                             .subscribe(
                                     { update(timerData, DateTime.now().toString("HH:mm:ss")) },
-                                    { error -> Log.e("COUNT_TIME", "Error: " + error) },
+                                    { error ->
+                                        AlertDialog.Builder(this)
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                .setTitle("Ops!")
+                                                .setMessage("Desculpa :( Aconteceu algum erro.")
+                                                .show()
+                                        Log.e("COUNT_TIME", "Error: $error") },
                                     { finish(timerData) }
                             )
                 }
