@@ -90,9 +90,18 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun restart() {
-        if (mService != null) {
-            mService!!.countTime()
-            updateToggleButton(false)
+        try {
+            if (mService != null) {
+                mService!!.countTime()
+                updateToggleButton(false)
+            }
+        } catch(e: Exception) {
+            AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Ops!")
+                    .setMessage("Desculpa :( Aconteceu algum erro. Detalhes: " + e.message)
+                    .show()
+
         }
     }
 
